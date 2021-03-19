@@ -1,6 +1,6 @@
 {
     "name": "djangomodels",
-    "displayName": "djangomodels",
+    "displayName": "Django Models",
     "description": "Simple Django model to generate models for you instantly",
     "version": "1.0.0",
     "engines": {
