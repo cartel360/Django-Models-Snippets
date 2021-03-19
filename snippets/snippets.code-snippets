@@ -2,27 +2,46 @@
     "Blog Model" : {
         "prefix": "!blogModel",
         "body": [
-            "class BlogPost(models.Model):",
-                "title = models.CharField(max_length=200, unique=True)",
-                "slug = models.SlugField(max_length=200, unique=True)",
-                "author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')",
-                "description = models.CharField(max_length=500)",
-                "content = RichTextUploadingField(config_name='awesome_ckeditor')",
-                "tags = TaggableManager()",
-                "category = models.ForeignKey('Category', related_name='category', on_delete=models.CASCADE)",
-                "keywords = models.CharField(max_length=250)",
-                "cover = models.ImageField(upload_to='images/')",
-                "created_on = models.DateTimeField(auto_now_add=True)",
-                "updated_on = models.DateTimeField(auto_now=True)",
-                "status = models.IntegerField(choices=STATUS, default=0)",
-            
+            "STATUS = (",
+            "\t(0, \"Draft\"),",
+            "\t(1, \"Published\")",
+            ")",
+            "\n",
+        
+            "class Category(models.Model):",
+            "\ttitle = models.CharField(max_length=200)",
+            "\tcreated_on = models.DateTimeField(auto_now_add=True)",
+            "$0",
+            "\tclass Meta:",
+            "\t\tverbose_name = \"Category\"",
+            "\t\tverbose_name_plural = \"Categories\"",
+            "\t\tordering = ['title']",
+            "$0",
+            "\tdef __str__(self):",
+            "\t\treturn self.title",
+            "\n",
 
-                "def __str__(self):",
-                    "return self.title",
+            "class $1BlogPost(models.Model):",
+                "\ttitle = models.CharField(max_length=200, unique=True) #Title of the Article",
+                "\tslug = models.SlugField(max_length=200, unique=True) #Unique identifier for the article",
+                "\tauthor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts') #Author of the Article",
+                "\tdescription = models.CharField(max_length=500) #Short Description of the article",
+                "\tcontent = RichTextUploadingField(config_name='awesome_ckeditor') #Content of the article, you need to install CKEditor",
+                "\ttags = TaggableManager() #Tags for a Particular Article, You need to install Taggit",
+                "\tcategory = models.ForeignKey('Category', related_name='category', on_delete=models.CASCADE) #Category of the article",
+                "\tkeywords = models.CharField(max_length=250) #Keywords to be used in SEO",
+                "\tcover = models.ImageField(upload_to='images/') #Cover Image of the article",
+                "\tcreated_on = models.DateTimeField(auto_now_add=True) #Date of creation",
+                "\tupdated_on = models.DateTimeField(auto_now=True) #Date of updation",
+                "\tstatus = models.IntegerField(choices=STATUS, default=0) #Status of the Article either Draft or Published",
+                "$0",
 
-                "def get_absolute_url(self):",
-                    "return reverse(\"blog:detail\", args=[str(self.slug)",
-                        "])"
+                "\tdef __str__(self):",
+                "\t\treturn self.title",
+                "$0",
+
+                "\tdef get_absolute_url(self):",
+                "\t\treturn reverse(\"blog:detail\", args=[str(self.slug)])"
         ]
     }
 }

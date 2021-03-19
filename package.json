@@ -11,8 +11,17 @@
     ],
     "contributes": {
         "snippets": [{
-            "language": "python",
-            "path": "./snippets/snippets.code-snippets"
-        }]
+                "language": "python",
+                "path": "./snippets/snippets.code-snippets"
+            },
+            {
+                "language": "python3",
+                "path": "./snippets/snippets.code-snippets"
+            },
+            {
+                "language": "py",
+                "path": "./snippets/snippets.code-snippets"
+            }
+        ]
     }
 }
