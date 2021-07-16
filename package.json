@@ -3,6 +3,12 @@
     "displayName": "Django Models",
     "description": "Simple Django model to generate models for you instantly",
     "version": "1.0.0",
+    "publisher": "Billy Okeyo",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cartel360/Django-Models-Snippets.git"
+    },
+    "icon": "icon.png",
     "engines": {
         "vscode": "^1.54.0"
     },

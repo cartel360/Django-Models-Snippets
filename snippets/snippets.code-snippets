@@ -8,9 +8,9 @@
             ")",
             "\n",
         
-            "class Category(models.Model):",
-            "\ttitle = models.CharField(max_length=200)",
-            "\tcreated_on = models.DateTimeField(auto_now_add=True)",
+            "class Category(models.Model): #Category for the Article",
+            "\ttitle = models.CharField(max_length=200) #Title of the Category",
+            "\tcreated_on = models.DateTimeField(auto_now_add=True) #Date of creation",
             "$0",
             "\tclass Meta:",
             "\t\tverbose_name = \"Category\"",
@@ -42,6 +42,164 @@
 
                 "\tdef get_absolute_url(self):",
                 "\t\treturn reverse(\"blog:detail\", args=[str(self.slug)])"
+        ]
+    },
+    "E-Commerce Model": {
+        "prefix": "!ecommerceModel",
+        "body": [
+            "#Item model, for storing different items to be sold",
+            "class Item(models.Model):",
+            "\ttitle = models.CharField(max_length=100)",
+            "\tprice = models.FloatField()",
+            "\tdiscount_price = models.FloatField(blank=True, null=True)",
+            "\tcategory = models.CharField(choices=CATEGORY_CHOICES, max_length=2)",
+            "\tlabel = models.CharField(choices=LABEL_CHOICES, max_length=1)",
+            "\tslug = models.SlugField()",
+            "\tdescription = models.TextField()",
+            "\timage = models.ImageField()",
+            "\n",
+
+            "\tdef __str__(self):",
+            "\t\treturn self.title",
+            "\n",
+
+            "\tdef get_absolute_url(self):",
+            "\t\treturn reverse(\"core:product\", kwargs={'slug': self.slug})",
+            "\n",
+
+            "\tdef get_add_to_cart_url(self):",
+            "\t\treturn reverse(\"core:add-to-cart\", kwargs={'slug': self.slug})",
+            "\n",
+
+            "\tdef get_remove_from_cart_url(self):",
+            "\t\treturn reverse(\"core:remove-from-cart\", kwargs={'slug': self.slug})",
+            "\n",
+
+            "#Order Item, checks on a particular item if ordered",
+            "class OrderItem(models.Model):",
+            "\tuser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)",
+            "\tordered = models.BooleanField(default=False)",
+            "\titem = models.ForeignKey(Item, on_delete=models.CASCADE)",
+            "\tquantity = models.IntegerField(default=1)",
+            "\n",
+
+            "\tdef __str__(self):",
+                "\t\treturn f\"{self.quantity} of {self.item.title}\"",
+            "\n",
+
+            "\tdef get_total_item_price(self):",
+                "\t\treturn self.quantity * self.item.price",
+            "\n",
+
+            "\tdef get_total_discount_item_price(self):",
+                "\t\treturn self.quantity * self.item.discount_price",
+            "\n",
+
+            "\tdef get_amount_saved(self):",
+                "\t\treturn self.get_total_item_price() - self.get_total_discount_item_price()",
+            "\n",
+
+            "\tdef get_final_price(self):",
+                "\t\tif self.item.discount_price:",
+                    "\t\t\treturn self.get_total_discount_item_price()",
+                "\t\treturn self.get_total_item_price()",
+            "\n",
+            
+            "#Order Model, Details on the Order made",
+            "class Order(models.Model):",
+            "\tuser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)",
+            "\tref_code = models.CharField(max_length=20, blank=True, null=True)",
+            "\titems = models.ManyToManyField(OrderItem)",
+            "\tstart_date = models.DateTimeField(auto_now_add=True)",
+            "\tordered_date = models.DateTimeField()",
+            "\tordered = models.BooleanField(default=False)",
+            "\tshipping_address = models.ForeignKey('Address', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)",
+            "\tbilling_address = models.ForeignKey('Address', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)",
+            "\tpayment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)",
+            "\tcoupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, blank=True, null=True)",
+            "\tbeing_delivered = models.BooleanField(default=False)",
+            "\treceived = models.BooleanField(default=False)",
+            "\trefund_requested = models.BooleanField(default=False)",
+            "\trefund_granted = models.BooleanField(default=False)",
+            "\n",
+
+            "\tdef __str__(self):",
+                "\t\treturn self.user.username",
+            "\n",
+
+            "\tdef get_total(self):",
+                "\t\ttotal = 0",
+                "\t\tfor order_item in self.items.all():",
+                    "\t\t\ttotal += order_item.get_final_price()",
+                "\t\tif self.coupon:",
+                    "\t\t\ttotal -= self.coupon.amount",
+                "\t\treturn total",
+            "\n",
+
+            "#Address Model",
+            "class Address(models.Model):",
+                "\tuser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)",
+                "\tstreet_address = models.CharField(max_length=100)",
+                "\tapartment_address = models.CharField(max_length=100)",
+                "\tcountry = CountryField(multiple=False)",
+                "\tzip = models.CharField(max_length=100)",
+                "\taddress_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)",
+                "\tdefault = models.BooleanField(default=False)",
+                "\n",
+
+                "\tdef __str__(self):",
+                    "\t\treturn self.user.username",
+                "\n",
+
+                "\tclass Meta:",
+                    "\t\tverbose_name_plural = 'Addresses'",
+                "\n",
+
+                "#Payment Model Using stripe",
+                "class Payment(models.Model):",
+                    "\tstripe_charge_id = models.CharField(max_length=50)",
+                    "\tuser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, blank=True, null=True)",
+                    "\tamount = models.FloatField()",
+                    "\ttimestamp = models.DateTimeField(auto_now_add=True)",
+                    "\n",
+
+                    "\tdef __str__(self):",
+                        "\t\treturn self.user.username",
+                "\n",
+
+                "#Coupon Model",
+                "class Coupon(models.Model):",
+                    "\tcode = models.CharField(max_length=15)",
+                    "\tamount = models.FloatField()",
+
+                    "\tdef __str__(self):",
+                        "\t\treturn self.code",
+                "\n",
+                
+                "#Refund Model",
+                "class Refund(models.Model):",
+                    "\torder = models.ForeignKey(Order, on_delete=models.CASCADE)",
+                    "\treason = models.TextField()",
+                    "\taccepted = models.BooleanField(default=False)",
+                    "\temail = models.EmailField()",
+                    "\n",
+
+                    "\tdef __str__(self):",
+                        "\t\treturn f\"{self.pk}\"",
+                "\n",
+
+                "#UserProfile receiver",
+                "def userprofile_receiver(sender, instance, created, *args, **kwargs):",
+                    "\tif created:",
+                        "\t\tuserprofile = UserProfile.objects.create(user=instance)",
+                "\n",
+
+
+                "post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)",
+
+
+
+
         ]
     }
 }
