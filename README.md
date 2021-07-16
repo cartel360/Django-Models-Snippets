@@ -19,9 +19,11 @@ Includes:
 
 To use the blog model use: 
 - !blogModel
+![blog](/gifs/blog.gif)
 
 To use the E-Commerce Model, use:
 - !ecommerceModel
+![blog](/gifs/ecommerce.gif)
 -----------------------------------------------------------------------------------------------------------
 
 
