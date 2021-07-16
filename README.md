@@ -17,7 +17,11 @@ Includes:
 - E-Commerce Model
 
 
+To use the blog model use: 
+- !blogModel
 
+To use the E-Commerce Model, use:
+- !ecommerceModel
 -----------------------------------------------------------------------------------------------------------
 
 
